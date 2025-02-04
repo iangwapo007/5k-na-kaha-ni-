@@ -266,16 +266,56 @@ export default function MemoLetterInbox({ doctype, searchParam }: Readonly<{ doc
         </div>
       </div>
       <div className="min-h-[200px] min-w-[300px] bg-white w-full p-4 lg:min-w-[800px]">
-        <div className="border min-w-[300px] rounded-md p-2 lg:min-w-[780px]">
-          <div className="p-3 grid grid-cols-1 lg:grid-cols-3 lg:min-w-[750px] gap-3">
-            { loading && <LoadingComponent /> }
-            { !loading && filteredData.length === 0 && <div className="text-center">No approved {doctype === DocumentType.Memo ? "memorandum" : "letter"}.</div>}
-            { !loading && filteredData.map((memoLetter: any, i: any) => (
-              <ThumbnailItemWithDepartment series={memoLetter?.series} onClick={() => onReadMemoLetter(memoLetter)} preparedByMe={false} isRead={memoLetter.isRead} key={memoLetter._id} thumbnailSrc="/thumbnail-document.png" department={(memoLetter.departmentId as DepartmentDocument)?.name} label={memoLetter.title} createdAt={memoLetter.createdAt} updatedAt={memoLetter.updatedAt} />
-            ))}
-          </div>
+  <div className="border min-w-[300px] rounded-md p-2 lg:min-w-[780px]">
+    {loading && <LoadingComponent />}
+    {!loading && filteredData.length === 0 && (
+      <div className="text-center">
+        No approved {doctype === DocumentType.Memo ? "memorandum" : "letter"}.
+      </div>
+    )}
+    {!loading && filteredData.length > 0 && (
+      <div className="w-full">
+        {/* Header */}
+        <div className="hidden lg:flex w-full border-b pb-2 font-semibold text-gray-600 px-3">
+          <div className="w-1/12">#</div>
+          <div className="w-4/12">Title</div>
+          <div className="w-3/12">Department</div>
+          <div className="w-2/12">Received</div>
+          <div className="w-2/12 text-center">Status</div>
+        </div>
+
+        {/* List Items */}
+        <div className="flex flex-col divide-y">
+          {filteredData.map((memoLetter: any, i: any) => (
+            <div
+              key={memoLetter._id}
+              className={`flex items-center p-3 hover:bg-gray-100 cursor-pointer ${
+                memoLetter.isRead ? "text-gray-500" : "font-semibold"
+              }`}
+              onClick={() => onReadMemoLetter(memoLetter)}
+            >
+              <div className="w-1/12">{i + 1}</div>
+              <div className="w-4/12 flex items-center gap-2">
+                <img
+                  src="/thumbnail-document.png"
+                  alt="Thumbnail"
+                  className="w-8 h-8 object-cover rounded"
+                />
+                {memoLetter.title}
+              </div>
+              <div className="w-3/12">{(memoLetter.departmentId as DepartmentDocument)?.name}</div>
+              <div className="w-2/12">{new Date(memoLetter.createdAt).toLocaleDateString()}</div>
+              <div className="w-2/12 text-center">
+                {memoLetter.isRead ? "Read" : "Unread"}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
+    )}
+  </div>
+</div>
+
     </div>
     <OCSModal title={selectedMemo?.title} open={!!selectedMemo} onClose={onBack}>
       <div className={clsx("min-w-[" + (8.5 * 96) + "px]", "max-w-[" + (8.5 * 96) + "px]", "min-h-[" + (1 * 96) + "px]")}>
