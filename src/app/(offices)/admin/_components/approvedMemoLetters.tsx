@@ -369,16 +369,48 @@ export default function MemoLetterInbox({ doctype, searchParam }: Readonly<{ doc
         </div>
       </div>
       <div className="min-h-[200px] min-w-[300px] bg-white w-full p-4 lg:min-w-[800px]">
-        <div className="border min-w-[300px] rounded-md p-2 lg:min-w-[780px]">
-          <div className="p-3 grid grid-cols-1 lg:grid-cols-3 lg:min-w-[750px] gap-3">
-            { loading && <LoadingComponent /> }
-            { !loading && filteredData.length === 0 && <div className="text-center">No approved {doctype === DocumentType.Memo ? "memorandum" : "letter"}.</div>}
-            { !loading && filteredData.map((memoLetter, i) => (
-              <ThumbnailItemWithDepartment series={memoLetter?.series} onClick={() => setSelectedMemo(memoLetter)} preparedByMe={memoLetter.isPreparedByMe} key={memoLetter._id} thumbnailSrc="/thumbnail-document.png" department={(memoLetter as any).departmentId?.name} label={memoLetter.title} createdAt={memoLetter.createdAt} updatedAt={memoLetter.updatedAt} />
-            ))}
-          </div>
+  <div className="border min-w-[300px] rounded-md p-2 lg:min-w-[780px]">
+    <div className="p-3 flex flex-col gap-2 divide-y">
+      {loading && <LoadingComponent />}
+      {!loading && filteredData.length === 0 && (
+        <div className="text-center">
+          No approved {doctype === DocumentType.Memo ? "memorandum" : "letter"}.
         </div>
-      </div>
+      )}
+      {!loading &&
+        filteredData.map((memoLetter, i) => (
+          <div
+            key={memoLetter._id}
+            className="p-3 flex items-center justify-between cursor-pointer hover:bg-gray-100 rounded-md"
+            onClick={() => setSelectedMemo(memoLetter)}
+          >
+            <div className="flex flex-col">
+              <span className="font-semibold">{memoLetter.title}</span>
+              <span className="text-sm text-gray-600">
+                {memoLetter?.series ? `Series: ${memoLetter.series}` : ""}
+              </span>
+              <span className="text-sm text-gray-600">
+                {memoLetter.departmentId?.name}
+              </span>
+              <span className="text-xs text-gray-500">
+                {new Date(memoLetter.createdAt).toLocaleDateString()} -{" "}
+                {new Date(memoLetter.updatedAt).toLocaleDateString()}
+              </span>
+            </div>
+            <div className="flex items-center">
+              <img src="/thumbnail-document.png" alt="Thumbnail" className="w-10 h-10 object-cover" />
+              {memoLetter.isPreparedByMe && (
+                <span className="ml-2 px-2 py-1 text-xs font-semibold bg-green-500 text-white rounded">
+                  Prepared by Me
+                </span>
+              )}
+            </div>
+          </div>
+        ))}
+    </div>
+  </div>
+</div>
+
     </div>
     <OCSModal title={selectedMemo?.title} open={!!selectedMemo} onClose={onBack}>
       <div className={clsx("min-w-[" + (8.5 * 96) + "px]", "max-w-[" + (8.5 * 96) + "px]", "min-h-[" + (1 * 96) + "px]")}>
